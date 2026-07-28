@@ -1,0 +1,13 @@
+{
+  "id": "./",
+  "name": "Ways World Clock",
+  "short_name": "Ways Clock",
+  "description": "Live time in Tehran, Kuala Lumpur and Los Angeles",
+  "lang": "en",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0e0d10",
+  "theme_color": "#0e0d10"
+}

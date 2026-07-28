@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Ways World Clock</title>
+<link rel="manifest" href="./manifest.webmanifest">
+<meta name="theme-color" content="#0e0d10">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="World Clock">
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,300;9..144,400;9..144,500&family=Inter:wght@300;400;500&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --ink: #f3efe8;
+    --ink-dim: rgba(243,239,232,0.55);
+    --ink-faint: rgba(243,239,232,0.28);
+    --bg: #0e0d10;
+    --line: rgba(243,239,232,0.14);
+  }
+  *{ box-sizing: border-box; margin:0; padding:0; }
+  html,body{ height:100%; }
+  body{
+    background: var(--bg);
+    color: var(--ink);
+    font-family: 'Inter', sans-serif;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    justify-content:center;
+    min-height:100vh;
+    padding: 6vh 6vw;
+    overflow-x:hidden;
+  }
+  .meridian{
+    font-family:'Inter', sans-serif;
+    font-size: 11px;
+    letter-spacing: 0.35em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    margin-bottom: 48px;
+    text-align:center;
+  }
+  .row{
+    display:flex;
+    width:100%;
+    max-width: 1080px;
+    position: relative;
+  }
+  .row::before{
+    content:"";
+    position:absolute;
+    top:0; bottom:0; left:0; right:0;
+    margin:auto;
+    height:1px;
+    background: var(--line);
+    z-index:0;
+  }
+  .city{
+    flex:1;
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    padding: 0 24px;
+    position:relative;
+    z-index:1;
+    transition: transform 0.6s ease;
+  }
+  .city + .city{
+    border-left: 1px solid var(--line);
+  }
+  .dot{
+    width:6px; height:6px;
+    border-radius:50%;
+    margin-bottom: 22px;
+    background: var(--dotcolor, #999);
+    box-shadow: 0 0 14px 2px var(--dotcolor, #999);
+    opacity:0.85;
+  }
+  .place{
+    font-family:'Inter', sans-serif;
+    font-size: 12px;
+    letter-spacing: 0.28em;
+    text-transform: uppercase;
+    color: var(--ink-dim);
+    margin-bottom: 18px;
+  }
+  .time{
+    font-family:'Fraunces', serif;
+    font-weight:300;
+    font-size: clamp(2.4rem, 6vw, 4.4rem);
+    line-height:1;
+    letter-spacing: 0.01em;
+    font-variant-numeric: tabular-nums;
+    white-space:nowrap;
+  }
+  .time sup{
+    font-size: 0.32em;
+    margin-left: 0.15em;
+    color: var(--ink-dim);
+    font-family:'Inter', sans-serif;
+    letter-spacing: 0.05em;
+    position:relative;
+    top: -0.9em;
+  }
+  .date{
+    margin-top: 16px;
+    font-size: 11px;
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .name{
+    margin-top: 26px;
+    font-family:'Fraunces', serif;
+    font-style: italic;
+    font-weight: 400;
+    font-size: 1.05rem;
+    color: var(--ink);
+    opacity: 0.92;
+  }
+  .diff{
+    margin-top: 10px;
+    font-size: 10.5px;
+    letter-spacing: 0.08em;
+    color: var(--ink-faint);
+  }
+  footer{
+    margin-top: 64px;
+    font-size: 10px;
+    letter-spacing: 0.3em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+    text-align:center;
+  }
+
+  @media (max-width: 720px){
+    .row{ flex-direction: column; }
+    .row::before{ display:none; }
+    .city{ padding: 34px 0; width:100%; }
+    .city + .city{ border-left:none; border-top:1px solid var(--line); }
+  }
+</style>
+</head>
+<body>
+
+  <div class="meridian">Tehran &nbsp;·&nbsp; Kuala Lumpur &nbsp;·&nbsp; Los Angeles</div>
+
+  <div class="row">
+    <div class="city" id="city-tehran">
+      <div class="dot" id="dot-tehran"></div>
+      <div class="place">Tehran</div>
+      <div class="time" id="time-tehran">--:--</div>
+      <div class="date" id="date-tehran">—</div>
+      <div class="name">Arman</div>
+      <div class="diff" id="diff-tehran"></div>
+    </div>
+    <div class="city" id="city-kl">
+      <div class="dot" id="dot-kl"></div>
+      <div class="place">Kuala Lumpur</div>
+      <div class="time" id="time-kl">--:--</div>
+      <div class="date" id="date-kl">—</div>
+      <div class="name">Negin</div>
+      <div class="diff" id="diff-kl"></div>
+    </div>
+    <div class="city" id="city-la">
+      <div class="dot" id="dot-la"></div>
+      <div class="place">Los Angeles</div>
+      <div class="time" id="time-la">--:--</div>
+      <div class="date" id="date-la">—</div>
+      <div class="name">Paris</div>
+      <div class="diff" id="diff-la"></div>
+    </div>
+  </div>
+
+  <footer>Same moment, three skies</footer>
+
+<script>
+  const cities = [
+    { key: 'tehran', tz: 'Asia/Tehran' },
+    { key: 'kl',     tz: 'Asia/Kuala_Lumpur' },
+    { key: 'la',     tz: 'America/Los_Angeles' },
+  ];
+
+  // returns a color representing time-of-day mood
+  function moodColor(hour){
+    // 0-4 deep night, 4-7 dawn, 7-17 day, 17-20 dusk, 20-24 night
+    if (hour >= 4 && hour < 7)  return '#e8a06a';   // dawn - amber
+    if (hour >= 7 && hour < 17) return '#e9d9a8';   // day - pale gold
+    if (hour >= 17 && hour < 20) return '#c98bd6';  // dusk - violet
+    return '#5b6bd6';                                // night - indigo
+  }
+
+  function fmt(date, tz){
+    const timeParts = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz, hour: 'numeric', minute: '2-digit', hour12: true
+    }).formatToParts(date);
+
+    let h = timeParts.find(p => p.type === 'hour').value;
+    let m = timeParts.find(p => p.type === 'minute').value;
+    let ap = timeParts.find(p => p.type === 'dayPeriod').value;
+
+    const dateStr = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz, weekday: 'short', month: 'short', day: 'numeric'
+    }).format(date);
+
+    const hour24 = parseInt(new Intl.DateTimeFormat('en-US', {
+      timeZone: tz, hour: 'numeric', hour12: false
+    }).format(date));
+
+    return { h, m, ap, dateStr, hour24 };
+  }
+
+  function offsetHours(date, tz){
+    const dtf = new Intl.DateTimeFormat('en-US', {
+      timeZone: tz, timeZoneName: 'shortOffset'
+    });
+    const part = dtf.formatToParts(date).find(p => p.type === 'timeZoneName').value;
+    const match = part.match(/GMT([+-]\d+)(?::(\d+))?/);
+    if (!match) return 0;
+    const h = parseInt(match[1]);
+    const m = match[2] ? parseInt(match[2]) / 60 : 0;
+    return h >= 0 ? h + m : h - m;
+  }
+
+  function render(){
+    const now = new Date();
+    const localOffset = -now.getTimezoneOffset() / 60;
+
+    cities.forEach(c => {
+      const { h, m, ap, dateStr, hour24 } = fmt(now, c.tz);
+      document.getElementById(`time-${c.key}`).innerHTML = `${h}:${m}<sup>${ap}</sup>`;
+      document.getElementById(`date-${c.key}`).textContent = dateStr;
+      document.getElementById(`dot-${c.key}`).style.setProperty('--dotcolor', moodColor(hour24));
+
+      const off = offsetHours(now, c.tz);
+      const diff = off - localOffset;
+      let label;
+      if (Math.abs(diff) < 0.1) label = 'Same as you';
+      else label = (diff > 0 ? '+' : '') + diff.toFixed(diff % 1 === 0 ? 0 : 1) + 'h vs you';
+      document.getElementById(`diff-${c.key}`).textContent = label;
+    });
+  }
+
+  render();
+  setInterval(render, 1000);
+</script>
+
+<script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./sw.js').catch((error) => {
+        console.warn('Service worker registration failed:', error);
+      });
+    });
+  }
+</script>
+</body>
+</html>
