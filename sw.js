@@ -1,8 +1,11 @@
-const CACHE_NAME = 'three-cities-clock-v1';
+const CACHE_NAME = 'three-cities-clock-v2';
 const APP_FILES = [
   './',
   './index.html',
-  './manifest.webmanifest'
+  './manifest.webmanifest?v=2',
+  './icon-180.png?v=2',
+  './icon-192.png?v=2',
+  './icon-512.png?v=2'
 ];
 
 self.addEventListener('install', (event) => {
